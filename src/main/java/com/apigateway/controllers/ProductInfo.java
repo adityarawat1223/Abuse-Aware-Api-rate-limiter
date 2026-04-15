@@ -1,16 +1,16 @@
 package com.apigateway.controllers;
 
 import com.apigateway.dto.*;
-import com.apigateway.middleware.Apimiddleware;
+import com.apigateway.middleware.ApiMiddleware;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ProductInfo {
 
-    private final Apimiddleware rateLimiter;
+    private final ApiMiddleware rateLimiter;
 
-    public ProductInfo(Apimiddleware rateLimiter) {
+    public ProductInfo(ApiMiddleware rateLimiter) {
         this.rateLimiter = rateLimiter;
     }
 
@@ -31,7 +31,7 @@ public class ProductInfo {
 
         else{
             answer.Rpid = 200;
-        };
+        }
 
         return answer;
     }
