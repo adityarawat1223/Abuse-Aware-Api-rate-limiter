@@ -1,9 +1,0 @@
-package com.apigateway.dto;
-
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-public class RequestInfo
-{
-    public ConcurrentLinkedQueue<Long> timestamps;
-    public  Integer Counter;
-}

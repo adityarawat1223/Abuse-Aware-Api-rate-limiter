@@ -18,21 +18,12 @@ public class ProductInfo {
     @GetMapping("/product")
     public Response Apicontroller(HttpServletRequest request) {
 
-        Response answer = new Response();
 
         ClientInfo Client = new ClientInfo();
         Client.Clientip = request.getRemoteAddr();
         Client.Apikey = "Product";
 
-        if(rateLimiter.isratelimited(Client)){
 
-            answer.Rpid = 429;
-        }
-
-        else{
-            answer.Rpid = 200;
-        }
-
-        return answer;
+        return rateLimiter.isratelimited(Client);
     }
 }
