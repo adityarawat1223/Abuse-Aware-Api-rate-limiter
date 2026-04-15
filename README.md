@@ -1,2 +1,7 @@
 # Abuse-Aware-Api-rate-limiter
-This is a Api rate Limiter , Currently its in Phase -2 
+
+I am using Spring boot and Java 17 with redis and Docker
+currently Basic structure are all Done.
+
+Algorithm used - Sliding Window with Redis ( Z-Set)
+
