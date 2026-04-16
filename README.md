@@ -13,7 +13,7 @@ for all kind of API without any Specific Changes
 ### **The Sliding Window Log (ZSet)**
 Unlike "Fixed Window" or "Token Bucket" algorithms, this project uses **Redis Sorted Sets**. Every request is stored as a unique member with a millisecond timestamp as its score.
 * **Cleanup:** `ZREMRANGEBYSCORE` removes timestamps older than the current dynamic window.
-* **Check:** `ZCARD` provides an $O(Logn)$ count of active requests within the window.
+* **Check:** `ZCOUNT` provides an $O(Logn)$ count of active requests within the window.
 
 ### **Penalty Algorithm**
 The system monitors 429 triggers to calculate a **Penalty Multiplier**:
