@@ -5,4 +5,5 @@ public class Response {
     public Long Rate_Limit_Usage;    // Match the Redis type
     public Integer Response_Id;
     public Long UntilExpiration;
+    public String ChangeInfo;
 }

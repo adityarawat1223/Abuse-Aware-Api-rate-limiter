@@ -2,6 +2,6 @@ package com.apigateway.dto;
 
 public class ClientInfo
 {
-    public String Clientip , Apikey;
+    public String ClientIp, Apikey;
 
 }

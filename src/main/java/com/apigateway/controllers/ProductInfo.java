@@ -16,14 +16,14 @@ public class ProductInfo {
 
 
     @GetMapping("/product")
-    public Response Apicontroller(HttpServletRequest request) {
+    public Response ApiController(HttpServletRequest request) {
 
 
         ClientInfo Client = new ClientInfo();
-        Client.Clientip = request.getRemoteAddr();
+        Client.ClientIp = request.getRemoteAddr();
         Client.Apikey = "Product";
 
 
-        return rateLimiter.isratelimited(Client);
+        return rateLimiter.IsRateLimited(Client);
     }
 }
