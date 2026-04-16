@@ -18,7 +18,7 @@ public class ApiMiddleware {
     public ApiMiddleware(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
-    private Long untilExpiration( String key) {
+    private Long untilExpiration( String key , long window) {
 
         Set<ZSetOperations.TypedTuple<String>> set =
                 redisTemplate.opsForZSet().rangeWithScores(key, 0, 0);
@@ -37,36 +37,49 @@ public class ApiMiddleware {
         long now = Instant.now().toEpochMilli();
 
 
-        return  Math.max(0L, (long)(score +  60000 - now) / 1000);
+        return  Math.max(0L, (long)(score +  window - now) / 1000);
     }
     public Response isratelimited(ClientInfo client){
 
         String key = "rl:" + client.Apikey + ":" + client.Clientip;
+        String penaltyKey = "penalty:" + client.Apikey + ":" + client.Clientip;
         Response response = new Response();
         long now = Instant.now().toEpochMilli();
-        long window = now - 60000;
+        String windowsize = redisTemplate.opsForValue().get(penaltyKey);
 
-        redisTemplate.opsForZSet().removeRangeByScore(key,0,window);
-        Long count = redisTemplate.opsForZSet().count(key, window, now);
+        long window = (windowsize == null ? 60000 : Long.parseLong(windowsize));
+
+        redisTemplate.opsForZSet().removeRangeByScore(key,0,now - window);
+        Long count = redisTemplate.opsForZSet().count(key, now - window, now);
         count = (count == null ? 0 : count);
 
         if( count >= 10){
             response.Response_Id = 429;
+            window = Math.min(window * 2, 3600000L);
+            redisTemplate.opsForValue().set(penaltyKey,String.valueOf(window) , java.time.Duration.ofMillis(window));
         }
 
-        else{
+        else {
             response.Response_Id = 200;
-            UUID uuid = UUID.randomUUID();
-            String unique = uuid.toString();
-            redisTemplate.opsForZSet().add(key, unique,now);
-            count++;
 
+            if (count < 5 && window > 60000) {
+                window = Math.max(60000, window / 2);
+
+                redisTemplate.opsForValue().set(
+                        penaltyKey,
+                        String.valueOf(window),
+                        java.time.Duration.ofMillis(window)
+                );
+            }
+
+            redisTemplate.opsForZSet().add(key, UUID.randomUUID().toString(), now);
+            count++;
         }
 
         response.Rate_Limit_Usage = count;
         response.Rate_Limit_Limit =  10;
-        response.UntilExpiration = untilExpiration(key);
-        redisTemplate.expire(key, java.time.Duration.ofMinutes(1));
+        response.UntilExpiration = untilExpiration(key , window);
+        redisTemplate.expire(key, java.time.Duration.ofMillis(window + 5000));
         return response;
 
     }
